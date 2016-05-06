@@ -51,8 +51,11 @@ public class PuzzleBoardView extends View {
     }
 
     public void shuffle() {
+        ArrayList<PuzzleBoard> newBoard = new ArrayList<>();
         if (animation == null && puzzleBoard != null) {
-            // Do something.
+            newBoard = puzzleBoard.neighbours();
+            puzzleBoard = newBoard.get(random.nextInt(newBoard.size()));
+            invalidate();
         }
     }
 

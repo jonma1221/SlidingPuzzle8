@@ -99,13 +99,29 @@ public class PuzzleBoard {
                 swapTiles(XYtoIndex(nullX, nullY), XYtoIndex(tileX, tileY));
                 return true;
             }
-
         }
         return false;
     }
 
     public ArrayList<PuzzleBoard> neighbours() {
-        return null;
+        ArrayList<PuzzleBoard> boards = new ArrayList<>();
+        int nullIndex = 0;
+        for(int i = 0; i < NUM_TILES * NUM_TILES; i++){
+            if(tiles.get(i) == null){
+                nullIndex = i;
+            }
+        }
+
+        for (int[] delta : NEIGHBOUR_COORDS) {
+            int neighborX = nullIndex % NUM_TILES + delta[0];
+            int neighborY = nullIndex / NUM_TILES  + delta[1];
+            if (neighborX >= 0 && neighborX < NUM_TILES && neighborY >= 0 && neighborY < NUM_TILES) {
+                PuzzleBoard copy = new PuzzleBoard(this);
+                copy.swapTiles(XYtoIndex(neighborX, neighborY), XYtoIndex(nullIndex % NUM_TILES, nullIndex / NUM_TILES));
+                boards.add(copy);
+            }
+        }
+        return boards;
     }
 
     public int priority() {
