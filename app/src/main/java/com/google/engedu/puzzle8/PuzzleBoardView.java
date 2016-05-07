@@ -4,11 +4,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.PriorityQueue;
 import java.util.Random;
 
 public class PuzzleBoardView extends View {
@@ -78,5 +81,32 @@ public class PuzzleBoardView extends View {
     }
 
     public void solve() {
+        PriorityQueue<PuzzleBoard> queue = new PriorityQueue<>();
+
+        queue.add(puzzleBoard);
+        while(!queue.isEmpty()){
+            PuzzleBoard board = queue.poll();
+
+            if(!board.resolved()) {
+                Log.i("Before","Here");
+                for (int i = 0; i < board.neighbours().size(); i++) {
+                    queue.add(board.neighbours().get(i));
+                }
+            }
+            else{
+                Log.i("After","Here");
+                ArrayList<PuzzleBoard> solutions = new ArrayList<>();
+                while(board.getPrevious() != null){
+                    solutions.add(board.getPrevious());
+                    board = board.getPrevious();
+                }
+
+                Collections.reverse(solutions);
+                animation = solutions;
+                invalidate();
+                break;
+            }
+
+        }
     }
 }

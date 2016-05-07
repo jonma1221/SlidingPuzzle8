@@ -6,8 +6,9 @@ import android.graphics.Canvas;
 import java.util.ArrayList;
 
 
-public class PuzzleBoard {
-
+public class PuzzleBoard implements Comparable<PuzzleBoard>{
+    private int steps;
+    private PuzzleBoard previous;
     private static final int NUM_TILES = 3;
     private static final int[][] NEIGHBOUR_COORDS = {
             { -1, 0 },
@@ -22,9 +23,11 @@ public class PuzzleBoard {
         int width = bitmap.getWidth() / NUM_TILES;
         int height = bitmap.getHeight() / NUM_TILES;
         PuzzleTile tile;
+        int pieceCount = 0;
         for(int i = 0; i < NUM_TILES; i++){
             for(int j = 0; j < NUM_TILES; j++){
-                tile = new PuzzleTile(Bitmap.createBitmap(bitmap, i * width, j * height, width, height), i + j);
+                tile = new PuzzleTile(Bitmap.createBitmap(bitmap, i * width, j * height, width, height), pieceCount);
+                pieceCount++;
                 tiles.add(tile);
             }
         }
@@ -34,6 +37,8 @@ public class PuzzleBoard {
 
     PuzzleBoard(PuzzleBoard otherBoard) {
         tiles = (ArrayList<PuzzleTile>) otherBoard.tiles.clone();
+        this.steps = otherBoard.steps + 1;
+        previous = otherBoard;
     }
 
     public void reset() {
@@ -125,7 +130,21 @@ public class PuzzleBoard {
     }
 
     public int priority() {
-        return 0;
+        int totalSteps = 0;
+        for(int i = 0; i < NUM_TILES * NUM_TILES; i++){
+            if(tiles.get(i) != null){
+                totalSteps += Math.abs(i/NUM_TILES - tiles.get(i).getNumber()/ NUM_TILES)
+                        + Math.abs(i%NUM_TILES - tiles.get(i).getNumber()% NUM_TILES);
+            }
+        }
+        return totalSteps + steps;
     }
 
+    public PuzzleBoard getPrevious(){
+        return previous;
+    }
+    @Override
+    public int compareTo(PuzzleBoard another) {
+        return this.priority() - another.priority();
+    }
 }
